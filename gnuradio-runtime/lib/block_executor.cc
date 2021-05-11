@@ -290,7 +290,7 @@ block_executor::state block_executor::run_one_iteration()
 
         // determine the minimum available output space
         output_idx = 0;
-    out_try_again:
+    blkd_out_try_again:
         noutput_items = min_available_space(
             m, d, m->output_multiple(), m->min_noutput_items(), output_idx);
         noutput_items = std::min(noutput_items, max_noutput_items);
@@ -307,8 +307,7 @@ block_executor::state block_executor::run_one_iteration()
 
             if (out_buf->output_blkd_cb_ready(m->output_multiple())) {
                 gr::custom_lock lock(std::ref(*out_buf->mutex()), out_buf);
-                if (!out_buf->output_blocked_callback(m->output_multiple(),
-                                                      m->min_noutput_items())) {
+                if (!out_buf->output_blocked_callback(m->output_multiple())) {
                     LOG(std::ostringstream msg;
                         msg << m << " -- BLKD_OUT -- ([1] callback FAILED)";
                         GR_LOG_INFO(d_debug_logger, msg.str()););
@@ -318,7 +317,7 @@ block_executor::state block_executor::run_one_iteration()
                         msg << m << " -- BLKD_OUT -- ([1] try again idx: " << output_idx
                             << ")";
                         GR_LOG_INFO(d_debug_logger, msg.str()););
-                    goto out_try_again;
+                    goto blkd_out_try_again;
                 }
             } else {
                 return BLKD_OUT;
@@ -406,7 +405,7 @@ block_executor::state block_executor::run_one_iteration()
 
         // determine the minimum available output space
         output_idx = 0;
-    out_try_again2:
+    blkd_out_try_again2:
         noutput_items = min_available_space(
             m, d, m->output_multiple(), m->min_noutput_items(), output_idx);
         if (ENABLE_LOGGING) {
@@ -431,8 +430,7 @@ block_executor::state block_executor::run_one_iteration()
                 // Call the output blocked callback which will tell us if it was
                 // able to unblock the output
                 gr::custom_lock lock(std::ref(*out_buf->mutex()), out_buf);
-                if (!out_buf->output_blocked_callback(m->output_multiple(),
-                                                      m->min_noutput_items())) {
+                if (!out_buf->output_blocked_callback(m->output_multiple())) {
                     LOG(std::ostringstream msg;
                         msg << m << " -- BLKD_OUT -- ([2] callback FAILED)";
                         GR_LOG_INFO(d_debug_logger, msg.str()););
@@ -442,7 +440,7 @@ block_executor::state block_executor::run_one_iteration()
                         msg << m << " -- BLKD_OUT -- ([2] try again idx: " << output_idx
                             << ")";
                         GR_LOG_INFO(d_debug_logger, msg.str()););
-                    goto out_try_again2;
+                    goto blkd_out_try_again2;
                 }
             } else {
                 return BLKD_OUT;
@@ -639,10 +637,22 @@ block_executor::state block_executor::run_one_iteration()
             goto were_done;
         }
 
+        // iterate over all of the outputs buffers and allow them to perform
+        // any necessary post-general_work() tasks
+        for (int i = 0; i < d->noutputs(); i++) {
+            d->output(i)->post_work(0);
+        }
+
         if (n == block::WORK_DONE) {
             d->post_work_cleanup();
             goto were_done;
         }
+
+        // -------------------------------------------------------------------
+        // still trying to determine whether the calls to post_work() for each
+        // output should occur before or after the call to post_work_cleanup()
+        // -------------------------------------------------------------------
+
 
         if (n != block::WORK_CALLED_PRODUCE) {
             d->produce_each(n); // advance write pointers
