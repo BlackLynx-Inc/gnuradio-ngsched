@@ -21,9 +21,9 @@
 #include "portaudio_source.h"
 #include <gnuradio/io_signature.h>
 #include <gnuradio/prefs.h>
-#include <stdio.h>
-#include <string.h>
 #include <unistd.h>
+#include <cstdio>
+#include <cstring>
 #include <iostream>
 #include <stdexcept>
 #ifdef _MSC_VER
@@ -64,7 +64,8 @@ void portaudio_source::create_ringbuffer(void)
                         (N_BUFFERS * bufsize_samples / d_input_parameters.channelCount));
 
     // FYI, the buffer indices are in units of samples.
-    d_writer = gr::make_buffer(N_BUFFERS * bufsize_samples, sizeof(sample_t));
+    d_writer = gr::make_buffer(
+        N_BUFFERS * bufsize_samples, sizeof(sample_t), N_BUFFERS * bufsize_samples);
     d_reader = gr::buffer_add_reader(d_writer, 0);
 }
 
@@ -110,7 +111,7 @@ int portaudio_source_callback(const void* inputBuffer,
 
     else { // overrun
         self->d_noverruns++;
-        ssize_t r = ::write(2, "aO", 2); // FIXME change to non-blocking call
+        auto r = ::write(2, "aO", 2); // FIXME change to non-blocking call
         if (r == -1) {
             gr::logger_ptr logger, debug_logger;
             gr::configure_default_loggers(

@@ -14,7 +14,7 @@
 /* BINDTOOL_GEN_AUTOMATIC(0)                                                       */
 /* BINDTOOL_USE_PYGCCXML(0)                                                        */
 /* BINDTOOL_HEADER_FILE(block.h)                                                   */
-/* BINDTOOL_HEADER_FILE_HASH(238d129ad018daa3146ff1d8867dc356)                     */
+/* BINDTOOL_HEADER_FILE_HASH(16d30b4b6f80b1b9dff3937c996d631e)                     */
 /***********************************************************************************/
 
 #include <pybind11/complex.h>
@@ -64,13 +64,6 @@ void bind_block(py::module& m)
 
 
         .def("fixed_rate", &block::fixed_rate, D(block, fixed_rate))
-
-
-        .def("forecast",
-             &block::forecast,
-             py::arg("noutput_items"),
-             py::arg("ninput_items_required"),
-             D(block, forecast))
 
 
         .def("general_work",

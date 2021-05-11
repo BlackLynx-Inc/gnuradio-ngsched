@@ -16,14 +16,9 @@
 #include <gnuradio/block_detail.h>
 #include <gnuradio/custom_lock.h>
 #include <gnuradio/prefs.h>
-#include <assert.h>
 #include <block_executor.h>
-#include <stdio.h>
-#include <boost/format.hpp>
-#include <boost/make_unique.hpp>
-#include <boost/thread.hpp>
-#include <iostream>
 #include <limits>
+#include <sstream>
 
 
 namespace gr {
@@ -276,7 +271,7 @@ block_executor::state block_executor::run_one_iteration()
     max_noutput_items = round_down(d_max_noutput_items, m->output_multiple());
 
     if (d->done()) {
-        assert(0);
+        GR_LOG_ERROR(d_logger, "unexpected done() in run_one_iteration");
         return DONE;
     }
 
@@ -697,7 +692,7 @@ block_executor::state block_executor::run_one_iteration()
                 msg << m << " -- NO OUTPUT -- [" << i << "] -- OUTPUT BLOCKED";
                 GR_LOG_DEBUG(d_debug_logger, msg.str()););
             gr::custom_lock lock(std::ref(*out_buf->mutex()), out_buf);
-            bool rc = out_buf->output_blocked_callback(m->output_multiple(), true);
+            out_buf->output_blocked_callback(m->output_multiple(), true);
             LOG(std::ostringstream msg; msg << m << " -- NO OUTPUT -- [" << i
                                             << "] -- OUTPUT BLOCKED CBACK: " << rc;
                 GR_LOG_DEBUG(d_debug_logger, msg.str()););
@@ -706,7 +701,7 @@ block_executor::state block_executor::run_one_iteration()
         // Have the caller try again...
         return READY_NO_OUTPUT;
     }
-    assert(0);
+    GR_LOG_ERROR(d_logger, "invalid state while going through iteration state machine");
 
 were_done:
     //    LOG(GR_LOG_INFO(d_debug_logger, "we're done"););
