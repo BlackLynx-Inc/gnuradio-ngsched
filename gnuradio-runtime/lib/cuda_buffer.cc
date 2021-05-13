@@ -67,11 +67,11 @@ bool cuda_buffer::do_allocate_buffer(int final_nitems, size_t sizeof_item)
     return true;
 }
 
-buffer* cuda_buffer::make_cuda_buffer(int nitems,
-                                      size_t sizeof_item,
-                                      uint64_t downstream_lcm_nitems,
-                                      block_sptr link,
-                                      block_sptr buf_owner)
+buffer_sptr cuda_buffer::make_cuda_buffer(int nitems,
+                                          size_t sizeof_item,
+                                          uint64_t downstream_lcm_nitems,
+                                          block_sptr link,
+                                          block_sptr buf_owner)
 {
     return buffer_sptr(new cuda_buffer(nitems, sizeof_item, downstream_lcm_nitems,
                                        link, buf_owner));
