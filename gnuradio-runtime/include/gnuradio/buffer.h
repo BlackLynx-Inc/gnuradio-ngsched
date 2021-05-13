@@ -42,7 +42,11 @@ enum class BufferMappingType { DoubleMapped, SingleMapped };
  *
  * \param nitems is the minimum number of items the buffer will hold.
  * \param sizeof_item is the size of an item in bytes.
+ * \param downstream_lcm_nitems is the least common multiple of the items to
+ *                              read by downstream block(s)
  * \param link is the block that writes to this buffer.
+ * \param buf_owner is the block that owns the buffer which may or may not
+ *                     be the same as the block that writes to this buffer
  */
 GR_RUNTIME_API buffer_sptr make_buffer(int nitems,
                                        size_t sizeof_item,
@@ -167,9 +171,9 @@ public:
     {
         return d_item_tags.upper_bound(x);
     }
-    
+
     /*!
-     * \brief Function to be executed after this object's owner completes the 
+     * \brief Function to be executed after this object's owner completes the
      * call to general_work()
      */
     virtual bool post_work(size_t nbytes) = 0;
@@ -225,8 +229,6 @@ public:
     void on_unlock();
 
     friend std::ostream& operator<<(std::ostream& os, const buffer& buf);
-
-    // -------------------------------------------------------------------------
 
 private:
     friend class buffer_reader;
