@@ -12,7 +12,6 @@
 #define INCLUDED_GR_RUNTIME_BUFFER_H
 
 #include <gnuradio/api.h>
-#include <gnuradio/block.h>
 #include <gnuradio/buffer_context.h>
 #include <gnuradio/custom_lock.h>
 #include <gnuradio/logger.h>
@@ -236,27 +235,7 @@ public:
     /*!
      * \brief assign buffer context
      */
-    void set_context(const buffer_context& context)
-    {
-        if ((d_context == buffer_context::DEFAULT_INVALID) ||
-            (d_context == context))
-        {
-            // Set the context if the existing value is the default or if
-            // it is the same
-            d_context = context;
-        }
-        else
-        {
-            // Otherwise error out as the context value cannot be changed after
-            // it is set
-            std::ostringstream msg;
-            msg << "Block: " << link()->identifier() << " has context "
-                << d_context << " assigned. Cannot change to context "
-                <<  context << ".";
-            GR_LOG_ERROR(d_logger, msg.str());
-            throw std::runtime_error(msg.str());
-        }
-    }
+    void set_context(const buffer_context& context);
 
 private:
     friend class buffer_reader;

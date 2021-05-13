@@ -28,6 +28,7 @@ typedef buffer_sptr (*factory_func_ptr)(int nitems,
                                         block_sptr link,
                                         block_sptr buf_owner);
 
+
 class GR_RUNTIME_API buffer_type_base
 {
 public:
@@ -55,16 +56,15 @@ public:
     bool operator>=(const buffer_type_base& other) = delete;
 
     const std::string& name() const { return d_name; }
-
-    buffer_sptr make_buffer(int nitems,
-                            size_t sizeof_item,
-                            uint64_t downstream_lcm_nitems,
-                            block_sptr link,
-                            block_sptr buf_owner)
+    
+    inline buffer_sptr make_buffer(int nitems,
+                                   size_t sizeof_item,
+                                   uint64_t downstream_lcm_nitems,
+                                   block_sptr link,
+                                   block_sptr buf_owner)
     {
         // Delegate call to factory function
-        return d_factory(nitems, sizeof_item, downstream_lcm_nitems,
-                         link, buf_owner);
+        return d_factory(nitems, sizeof_item, downstream_lcm_nitems, link, buf_owner);
     }
 
 protected:
@@ -102,9 +102,6 @@ typedef const buffer_type_base& buffer_type;
         buftype_##CLASSNAME()                                          \
             : buffer_type_base(#CLASSNAME, FACTORY_FUNC_PTR) {}        \
     };
-
-// MAKE_CUSTOM_BUFFER_TYPE(DEFAULT_NON_CUSTOM, foobar);
-// MAKE_CUSTOM_BUFFER_TYPE(CUSTOM_HOST, foobar); // used only for test purposes
 
 } // namespace gr
 
