@@ -57,12 +57,13 @@ static long s_buffer_count = 0; // counts for debugging storage mgmt
  ---------------------------------------------------------------------------- */
 
 
-buffer::buffer(BufferMappingType buf_type,
+buffer::buffer(buffer_mapping_type buf_type,
                int nitems,
                size_t sizeof_item,
                uint64_t downstream_lcm_nitems,
                block_sptr link)
-    : d_base(0),
+    : d_context(buffer_context::DEFAULT_INVALID),
+      d_base(0),
       d_bufsize(0),
       d_buf_map_type(buf_type),
       d_max_reader_delay(0),
@@ -114,6 +115,7 @@ buffer_sptr make_buffer(int nitems,
             << " -- sizeof_item: " << sizeof_item;
         GR_LOG_DEBUG(logger, msg.str());
 #endif
+// <<<<<<< HEAD
 
 //      return buffer_sptr(ffn(nitems, sizeof_item, downstream_lcm_nitems,
 //                             link, buf_owner));
@@ -121,6 +123,11 @@ buffer_sptr make_buffer(int nitems,
 //      return buffer_sptr(new buffer_single_mapped(
 //                         nitems, sizeof_item, downstream_lcm_nitems,
 //                         link, buf_owner));
+=======
+        throw std::runtime_error("TO BE RESOLVED");
+//        return buffer_sptr(new buffer_single_mapped(
+//            nitems, sizeof_item, downstream_lcm_nitems, link, buf_owner));
+>>>>>>> ae8b996c6ab5729e02ca815648d67e803fea6db9
 
     } else {
         // Default to allocating a buffer_double_mapped instance

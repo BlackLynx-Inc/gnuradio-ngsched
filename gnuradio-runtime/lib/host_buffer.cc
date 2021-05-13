@@ -63,6 +63,12 @@ bool host_buffer::post_work(size_t nsize)
     return true;
 
 }
+    
+bool host_buffer::do_allocate_buffer(int final_nitems, size_t sizeof_item)
+{
+    d_buffer.reset(new char[final_nitems * sizeof_item]);
+    return true;
+}
 
 buffer_sptr host_buffer::make_host_buffer(int nitems,
                                       size_t sizeof_item,

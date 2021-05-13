@@ -40,16 +40,16 @@ namespace gr {
 //
 //     Do we want to keep the enum class, keep the pre-existing type,
 //     or something else?
-std::ostream& operator<<(std::ostream& os, buffer_type_t buffer_type)
+std::ostream& operator<<(std::ostream& os, buffer_type buffer_type)
 {
     switch(buffer_type)
     {
-    case buftype_DEFAULT_CUDA:
-        return os << "buftype_DEFAULT_CUDA";
-    case buftype_DEFAULT_HIP:
-        return os << "buftype_DEFAULT_HIP";
-    case buftype_DEFAULT_HOST:
-        return os << "buftype_DEFAULT_HOST";
+    case buffer_type::BUFFER_TYPE_HOST:
+        return os << "BUFFER_TYPE_HOST";
+    case buffer_type::BUFFER_TYPE_CUDA:
+        return os << "BUFFER_TYPE_CUDA";
+    case buffer_type::BUFFER_TYPE_HIP:
+        return os << "BUFFER_TYPE_HIP";
     default:
         return os << "BUFFER TYPE UNKNOWN: " << buffer_type;
     }
@@ -63,8 +63,8 @@ buffer_type_lookup_table& buffer_type_lookup_table::get_instance()
     return instance;
 }
 
-//bool buffer_type_lookup_table::insert(buffer_type_t buffer_type,
-bool buffer_type_lookup_table::insert(buffer_type_t& buffer_type,
+#if 0
+bool buffer_type_lookup_table::insert(buffer_type buffer_type,
                                       func_ptr_t(*fn)(int))
 {
     unique_lock<std::mutex> lck(d_mutex);
@@ -82,7 +82,7 @@ bool buffer_type_lookup_table::insert(buffer_type_t& buffer_type,
     }
 }
 
-func_ptr_t buffer_type_lookup_table::lookup(buffer_type_base* buffer_type)
+func_ptr_t buffer_type_lookup_table::lookup(buffer_type buffer_type)
 {
     unique_lock<std::mutex> lck(d_mutex);
 
@@ -95,7 +95,7 @@ func_ptr_t buffer_type_lookup_table::lookup(buffer_type_base* buffer_type)
     }
 }
 
-bool buffer_type_lookup_table::erase(buffer_type_base* buffer_type)
+bool buffer_type_lookup_table::erase(buffer_type buffer_type)
 {
     unique_lock<std::mutex> lck(d_mutex);
 
