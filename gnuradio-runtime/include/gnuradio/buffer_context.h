@@ -22,7 +22,7 @@ namespace gr {
         DEVICE_TO_DEVICE
     };
 
-    std::ostream& operator<<(std::ostream& os, buffer_context context);
+    std::ostream& operator<<(std::ostream& os, const buffer_context& context);
 }
 
 #endif
