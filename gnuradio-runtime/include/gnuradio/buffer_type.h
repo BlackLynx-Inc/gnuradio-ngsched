@@ -12,6 +12,7 @@
 #define INCLUDED_GR_RUNTIME_CUSTOM_BUFFER_TYPE_H
 
 #include <gnuradio/api.h>
+#include <gnuradio/runtime_types.h>
 
 #include <cstdint>
 #include <mutex>
@@ -19,6 +20,13 @@
 
 namespace gr {
 
+// This is the function pointer declaration for the factory-like functions
+// used to create buffer subclasses
+typedef buffer_sptr (*factory_func_ptr)(int nitems,
+                                        size_t sizeof_item,
+                                        uint64_t downstrea_lcm_nitems,
+                                        block_sptr link,
+                                        block_sptr buf_owner);
 
 class GR_RUNTIME_API buffer_type_base
 {
@@ -48,15 +56,30 @@ public:
 
     const std::string& name() const { return d_name; }
 
+    buffer_sptr make_buffer(int nitems,
+                            size_t sizeof_item,
+                            uint64_t downstream_lcm_nitems,
+                            block_sptr link,
+                            block_sptr buf_owner)
+    {
+        // Delegate call to factory function
+        return d_factory(nitems, sizeof_item, downstream_lcm_nitems,
+                         link, buf_owner);
+    }
+
 protected:
     static uint32_t s_nextId;
     static std::mutex s_mutex;
 
     uint32_t d_value;
     std::string d_name;
+    factory_func_ptr d_factory;
 
-    // Private constructor
-    buffer_type_base(const char* name) : d_name(name)
+    // Protected constructor
+    buffer_type_base(const char* name,
+                     factory_func_ptr factory_func)
+        : d_name(name),
+          d_factory(factory_func)
     {
         std::lock_guard<std::mutex> lock(s_mutex);
         d_value = s_nextId++;
@@ -65,7 +88,7 @@ protected:
 
 typedef const buffer_type_base& buffer_type;
 
-#define MAKE_CUSTOM_BUFFER_TYPE(CLASSNAME)                             \
+#define MAKE_CUSTOM_BUFFER_TYPE(CLASSNAME, FACTORY_FUNC_PTR)           \
     class GR_RUNTIME_API buftype_##CLASSNAME : public buffer_type_base \
     {                                                                  \
     public:                                                            \
@@ -76,11 +99,12 @@ typedef const buffer_type_base& buffer_type;
         }                                                              \
                                                                        \
     private:                                                           \
-        buftype_##CLASSNAME() : buffer_type_base(#CLASSNAME) {}        \
+        buftype_##CLASSNAME()                                          \
+            : buffer_type_base(#CLASSNAME, FACTORY_FUNC_PTR) {}        \
     };
 
-MAKE_CUSTOM_BUFFER_TYPE(DEFAULT_NON_CUSTOM);
-MAKE_CUSTOM_BUFFER_TYPE(CUSTOM_HOST); // used only for test purposes
+// MAKE_CUSTOM_BUFFER_TYPE(DEFAULT_NON_CUSTOM, foobar);
+// MAKE_CUSTOM_BUFFER_TYPE(CUSTOM_HOST, foobar); // used only for test purposes
 
 } // namespace gr
 
