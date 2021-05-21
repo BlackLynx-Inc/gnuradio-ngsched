@@ -28,6 +28,7 @@ install(FILES
   buffer_type.h
   constants.h
   cuda_buffer.h
+  custom_lock.h
   endianness.h
   expj.h
   flowgraph.h
