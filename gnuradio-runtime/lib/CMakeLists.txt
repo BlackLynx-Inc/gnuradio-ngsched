@@ -43,7 +43,6 @@ include(GrCUDA)
 set(CUDA_SOURCES )
 
 if (CUDA_FOUND)
-  message(STATUS "CUDA WAS FOUNDA")
   set(CUDA_SOURCES
     cuda_buffer.cc)
 endif()
