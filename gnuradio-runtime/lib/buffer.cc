@@ -58,7 +58,7 @@ static long s_buffer_count = 0; // counts for debugging storage mgmt
  ---------------------------------------------------------------------------- */
 
 
-buffer::buffer(buffer_mapping_type buf_type,
+buffer::buffer(BufferMappingType buf_type,
                int nitems,
                size_t sizeof_item,
                uint64_t downstream_lcm_nitems,
