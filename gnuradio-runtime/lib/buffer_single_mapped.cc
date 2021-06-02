@@ -31,7 +31,7 @@ buffer_single_mapped::buffer_single_mapped(int nitems,
                                            uint64_t downstream_lcm_nitems,
                                            block_sptr link,
                                            block_sptr buf_owner)
-    : buffer(BufferMappingType::SingleMapped,
+    : buffer(buffer_mapping_type::single_mapped,
              nitems,
              sizeof_item,
              downstream_lcm_nitems,

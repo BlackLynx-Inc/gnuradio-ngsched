@@ -31,7 +31,7 @@ class vmcircbuf;
 class buffer_reader;
 class buffer_reader_sm;
 
-enum class BufferMappingType { DoubleMapped, SingleMapped };
+enum class buffer_mapping_type { double_mapped, single_mapped };
 
 /*!
  * \brief Allocate a buffer that holds at least \p nitems of size \p sizeof_item.
@@ -69,7 +69,7 @@ public:
     /*!
      * \brief return the buffer's mapping type
      */
-    BufferMappingType get_mapping_type() { return d_buf_map_type; }
+    buffer_mapping_type get_mapping_type() { return d_buf_map_type; }
 
     /*!
      * \brief return number of items worth of space available for writing
@@ -280,7 +280,7 @@ private:
 protected:
     char* d_base;           // base address of buffer inside d_vmcircbuf.
     unsigned int d_bufsize; // in items
-    BufferMappingType d_buf_map_type;
+    buffer_mapping_type d_buf_map_type;
 
     // Keep track of maximum sample delay of any reader; Only prune tags past this.
     unsigned d_max_reader_delay;
@@ -345,7 +345,7 @@ protected:
      * dependent boundary.  This is typically the system page size, but
      * under MS windows is 64KB.
      */
-    buffer(BufferMappingType buftype,
+    buffer(buffer_mapping_type buftype,
            int nitems,
            size_t sizeof_item,
            uint64_t downstream_lcm_nitems,
