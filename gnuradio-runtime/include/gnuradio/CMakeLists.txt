@@ -27,7 +27,6 @@ install(FILES
   buffer_single_mapped.h
   buffer_type.h
   constants.h
-  cuda_buffer.h
   custom_lock.h
   endianness.h
   expj.h
@@ -38,8 +37,6 @@ install(FILES
   gr_complex.h
   hier_block2.h
   high_res_timer.h
-  hip_buffer.h
-  host_buffer.h
   integer_math.h
   io_signature.h
   logger.h
